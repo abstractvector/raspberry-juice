@@ -1,0 +1,50 @@
+{
+  "name": "raspberry-juice",
+  "version": "1.0.0",
+  "description": "Open source irrigation controller (sprinkler) written in NodeJS designed for the Raspberry Pi",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node build/index.js",
+    "clean": "rimraf build && mkdir build",
+    "build-server": "babel --presets es2015 -d ./build ./src -s",
+    "build": "npm run clean && npm run build-server",
+    "watch": "nodemon src/ --exec \"babel-node --presets es2015 src/index.js\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/abstractvector/raspberry-juice.git"
+  },
+  "keywords": [
+    "irrigation",
+    "controller",
+    "sprinkler",
+    "raspberry",
+    "pi",
+    "gpio",
+    "solenoid"
+  ],
+  "author": "Matt Knight <abstractvector@users.noreply.github.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/abstractvector/raspberry-juice/issues"
+  },
+  "homepage": "https://github.com/abstractvector/raspberry-juice#readme",
+  "devDependencies": {
+    "babel-cli": "^6.9.0",
+    "babel-preset-es2015": "^6.9.0",
+    "eslint": "^4.0.0",
+    "eslint-config-airbnb-base": "^11.2.0",
+    "eslint-plugin-import": "^2.3.0",
+    "nodemon": "^1.11.0",
+    "rmrf": "^1.0.2"
+  },
+  "dependencies": {
+    "rpi-gpio": "^0.8.1",
+    "winston": "^2.2.0"
+  },
+  "babel": {
+    "presets": [
+      "es2015"
+    ]
+  }
+}
