@@ -5,6 +5,7 @@
   "main": "src/index.js",
   "scripts": {
     "start": "node build/index.js",
+    "lint": "eslint src/ || echo",
     "clean": "rimraf build && mkdir build",
     "build-server": "babel --presets es2015 -d ./build ./src -s",
     "build": "npm run clean && npm run build-server",
@@ -39,6 +40,10 @@
     "rmrf": "^1.0.2"
   },
   "dependencies": {
+    "config": "^1.26.1",
+    "cron": "^1.2.1",
+    "js-yaml": "^3.8.4",
+    "node-cleanup": "^2.1.2",
     "rpi-gpio": "^0.8.1",
     "winston": "^2.2.0"
   },

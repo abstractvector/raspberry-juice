@@ -1,0 +1,26 @@
+location:
+  latitude: 37.7951780
+  longitude:  -122.4027790
+
+zones:
+  1:
+    pin: 7
+    name: Main Lawn
+  2:
+    pin: 11
+    name: Side Lawn
+  3:
+    pin: 13
+    name: Top Lawn
+  4:
+    pin: 15
+    name: Flower Bed
+
+schedules:
+  - days: all
+    time: 05:30
+    program:
+      1: 10m
+      2: 5m
+      3: 8m
+      4: 4m
