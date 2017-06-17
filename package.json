@@ -40,6 +40,7 @@
     "rmrf": "^1.0.2"
   },
   "dependencies": {
+    "async": "^2.4.1",
     "config": "^1.26.1",
     "cron": "^1.2.1",
     "js-yaml": "^3.8.4",

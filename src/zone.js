@@ -3,7 +3,7 @@ import gpio from './gpio';
 
 class Zone {
   constructor(key, config) {
-    this.on = false;
+    this.value = false;
     this.key = key;
 
     this.setPin(config.pin);
@@ -16,8 +16,6 @@ class Zone {
     }
 
     this.pin = pin;
-
-    gpio.setup(pin, gpio.DIR_LOW);
     return this;
   }
 
@@ -28,6 +26,15 @@ class Zone {
 
     this.name = name;
     return this;
+  }
+
+  setup(onSetup) {
+    return gpio.setup(this.pin, gpio.DIR_LOW, (error) => {
+      if (typeof onSetup === 'function') {
+        return onSetup(error);
+      }
+      return error;
+    });
   }
 
   run(duration, callback) {
@@ -66,7 +73,12 @@ class Zone {
   }
 
   write(level, callback) {
-    return gpio.write(this.pin, !!level, callback);
+    return gpio.write(this.pin, !!level, (error) => {
+      if (!error) {
+        this.value = !!level;
+      }
+      return typeof callback === 'function' ? callback(error) : error;
+    });
   }
 }
 
