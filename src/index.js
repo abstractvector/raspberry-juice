@@ -1,17 +1,17 @@
-// import { CronJob } from 'cron';
 import async from 'async';
 import config from 'config';
 import nodeCleanup from 'node-cleanup';
 import gpio from './gpio';
 import logger from './logger';
+import Schedule from './schedule';
 import Zone from './zone';
 
 const zones = {};
 
 // need some graceful error handling to make sure the pins are set low on exit
 nodeCleanup(() => {
-  Object.keys(zones).forEach((zoneKey) => {
-    zones[zoneKey].write(false);
+  Object.keys(zones).forEach((scheduleKey) => {
+    zones[scheduleKey].write(false);
   });
 
   gpio.destroy((error) => {
@@ -26,13 +26,26 @@ nodeCleanup(() => {
 
 logger.notice('Starting Raspberry Juice');
 
+// create the schedules
+const setupSchedules = () => {
+  const schedules = [];
+
+  if (Array.isArray(config.get('schedules')) && config.get('schedules').length > 0) {
+    config.get('schedules').forEach((scheduleConfig) => {
+      const schedule = new Schedule(scheduleConfig, zones);
+      schedules.push(schedule);
+      logger.info('Successfully created schedule');
+    });
+  }
+};
+
 // create the zones
 if (typeof config.get('zones') === 'object' && Object.keys(config.get('zones')).length > 0) {
-  const zonesConfig = config.get('zones');
+  const schedulesConfig = config.get('zones');
 
-  Object.keys(zonesConfig).forEach((zoneKey) => {
-    zones[zoneKey] = new Zone(zoneKey, zonesConfig[zoneKey]);
-    logger.info(`Created ${zones[zoneKey].name} zone using pin ${zones[zoneKey].pin}`);
+  Object.keys(schedulesConfig).forEach((scheduleKey) => {
+    zones[scheduleKey] = new Zone(scheduleKey, schedulesConfig[scheduleKey]);
+    logger.info(`Created ${zones[scheduleKey].name} zone using pin ${zones[scheduleKey].pin}`);
   });
 
   async.each(zones, (zone, callback) => {
@@ -44,12 +57,8 @@ if (typeof config.get('zones') === 'object' && Object.keys(config.get('zones')).
 
     logger.notice('All zones setup successfully');
 
-    zones['1'].run(5, () => {
-      logger.info('Schedule complete');
-    });
+    setupSchedules();
 
     return true;
   });
 }
-
-// create the schedules
