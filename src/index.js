@@ -1,7 +1,6 @@
 import async from 'async';
 import config from 'config';
 import nodeCleanup from 'node-cleanup';
-import gpio from './gpio';
 import logger from './logger';
 import Schedule from './schedule';
 import Zone from './zone';
@@ -9,19 +8,21 @@ import Zone from './zone';
 const zones = {};
 
 // need some graceful error handling to make sure the pins are set low on exit
-nodeCleanup(() => {
-  Object.keys(zones).forEach((scheduleKey) => {
-    zones[scheduleKey].write(false);
-  });
-
-  gpio.destroy((error) => {
+nodeCleanup((exitCode, signal) => {
+  async.each(zones, (zone, callback) => {
+    zone.write(false, callback);
+  }, (error) => {
     if (error) {
-      return logger.error(`Error whilst turning off zones: ${error}`);
+      logger.error(`Error whilst shutting down: ${error}`);
+    } else {
+      logger.notice('All zones have been turned off and pins returned to low state');
     }
-    return logger.notice('All zones successfully turned off');
+
+    process.exit(process.pid, signal);
   });
 
-  process.exit(0);
+  nodeCleanup.uninstall();
+  return false;
 });
 
 logger.notice('Starting Raspberry Juice');
